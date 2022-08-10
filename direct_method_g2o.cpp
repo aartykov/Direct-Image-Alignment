@@ -138,7 +138,7 @@ class EdgeProjection : public g2o::BaseUnaryEdge<2, Eigen::Vector2d, VertexPose>
             else
                 status_ = true;
 
-            if(status_) // BU HATALI OLABILIR !!!!
+            if(status_) 
             {   
                 double X = p_curr[0], Y = p_curr[1], Z = p_curr[2], Z2 = Z*Z, Z_inv=1.0/Z,
                 Z2_inv = Z_inv * Z_inv;
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     cv::Mat left_img = cv::imread(left_file, 0);
     cv::Mat disparity_img = cv::imread(disparity_file, 0);
 
-    // let's randomly pick pixels in the first image and generate some 3d points in the first image's frame
+    
     cv::RNG rng;
     int nPoints = 2000;
     int boarder = 20;
@@ -239,19 +239,19 @@ int main(int argc, char** argv)
 
 void MotionOnlyBAG2O(vector<Eigen::Vector2d>& ref_points2d, cv::Mat& img1, cv::Mat& img2, vector<double>& ref_depth, Sophus::SE3d& pose)
 {
-    // Build graph optimization
+    
     // First, let's define g2o
     typedef g2o::BlockSolver<g2o::BlockSolverTraits<6,3>> BlockSolverType;
 
     typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
 
-    // Gradient descent method, you can choose from GN, LM, DogLeg
+   
     auto solver = new g2o::OptimizationAlgorithmGaussNewton(
         g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
     
     g2o::SparseOptimizer optimizer;
     optimizer.setAlgorithm(solver);
-    optimizer.setVerbose(true); // turn on verbose output for debugging
+    optimizer.setVerbose(true); 
 
     // Vertex
     VertexPose* vertex_pose = new VertexPose();
@@ -264,7 +264,7 @@ void MotionOnlyBAG2O(vector<Eigen::Vector2d>& ref_points2d, cv::Mat& img1, cv::M
     K_eigen << 520.9, 0, 325.1, 0, 521.0, 249.7, 0, 0, 1;
 
     // Edges
-    int index = 1; // Neden 1'den basladi ????
+    int index = 1;
     for(size_t i=0; i<ref_points2d.size(); i++)
     {
         auto p2d = ref_points2d[i];
@@ -272,7 +272,7 @@ void MotionOnlyBAG2O(vector<Eigen::Vector2d>& ref_points2d, cv::Mat& img1, cv::M
         EdgeProjection* edge = new EdgeProjection(img1, img2, K_eigen, depth);
         edge->setId(index);
         edge->setVertex(0, vertex_pose);
-        edge->setMeasurement(p2d); // ref pixelleri burdan mi versem daha iyi olur acaba ???
+        edge->setMeasurement(p2d);
         edge->setInformation(Eigen::Matrix2d::Identity());
         optimizer.addEdge(edge);
         index++;
