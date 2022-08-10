@@ -4,7 +4,7 @@ This is an implementation of a single layer direct image alignment with g2o grap
 
 ### Dependencies
 
-Markup : * Opencv
+#Markup : * Opencv
          * Eigen
          * g2o
          * Sophus
